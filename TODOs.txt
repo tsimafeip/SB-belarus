@@ -1,0 +1,2 @@
+1. Introduce simple db with hyperlink as key to avoid repetition and storing data in files
+2. Do initial analysis of existing data
