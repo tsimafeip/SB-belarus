@@ -106,3 +106,8 @@ def fetch_url(url):
 
 if __name__ == '__main__':
     fetch_url.delay(BASE_URL)
+
+
+'''
+1. Not clear how to 
+'''

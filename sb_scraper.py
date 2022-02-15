@@ -62,7 +62,7 @@ def parse_article_page(page_url: str, document_id: int) -> SbDocument:
     text_link_pairs = [(item.text.strip(), item.attrs.get('href').replace(http_prefix, https_prefix))
                        for item in soup.find_all('a', attrs={'target': '_blank'})]
     similar_documents = [
-        (next_page_title, next_page_href)
+        next_page_href
         for next_page_title, next_page_href in text_link_pairs
         if next_page_href.startswith(articles_prefix) and 'tags' not in next_page_href and next_page_title
     ]
@@ -84,11 +84,10 @@ def parse_article_page(page_url: str, document_id: int) -> SbDocument:
     body = soup.find('div', attrs={'itemprop': 'articleBody'}).text.strip()
 
     # TODO: understand how to filter off blockquote staff better
-    for doc_title, _ in similar_documents:
+    for doc_title in similar_documents:
         body = body.replace(doc_title, "")
 
-    sb_document = SbDocument(title=title, date=date, author=author, body=body, hyperlink=page_url,
+    sb_document = SbDocument(title=title, publication_date=date, author=author, body=body, hyperlink=page_url,
                              title_h1=title_h1, tags=tags, document_id=document_id, similar_documents=similar_documents)
-    # sb_document.dump_to_json()
 
     return sb_document
