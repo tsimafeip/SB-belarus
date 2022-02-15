@@ -19,12 +19,6 @@ from sb_scraper import collect_links, parse_article_page
 '''
 
 if __name__ == '__main__':
-    page_urls = collect_links()
+    page_urls = collect_links(end_page=332, path_to_file='page_links_new.txt')
 
-    con = sqlite3.connect('example.db')
-
-    sb_docs = []
-    with open(os.path.join('data', 'sb_docs.json'), 'w', encoding='utf-8') as f:
-        for document_id, page_url in tqdm(enumerate(page_urls)):
-            sb_document = parse_article_page(page_url, document_id)
-            sb_docs.append(sb_document)
+    print(len(page_urls))
