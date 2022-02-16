@@ -52,7 +52,7 @@ def collect_links(start_page: int = 1, end_page: int = 968, path_to_file: str = 
     return page_links
 
 
-def parse_article_page(page_url: str, document_id: int) -> SbDocument:
+def parse_article_page(page_url: str) -> SbDocument:
     # path_to_file = os.path.join('data', f'{document_id}.json')
     # if os.path.isfile(path_to_file):
     #     return SbDocument.load_from_json(document_id)
@@ -70,10 +70,11 @@ def parse_article_page(page_url: str, document_id: int) -> SbDocument:
     if tags:
         tags = tags.text.strip().split('\n')
     article_metinfo = soup.find('div', attrs={'class': "item-ajax article-accord"})
-    title = title_h1 = None
+    title = data_id = title_h1 = None
     if article_metinfo:
         title = article_metinfo.attrs['data-title'].strip()
         title_h1 = article_metinfo.attrs['data-title-h1'].strip()
+        data_id = int(article_metinfo.attrs['data-id'].strip())
         # skip storing duplicate data
         if title_h1 == title:
             title_h1 = None
@@ -88,6 +89,6 @@ def parse_article_page(page_url: str, document_id: int) -> SbDocument:
         body = body.replace(doc_title, "")
 
     sb_document = SbDocument(title=title, publication_date=date, author=author, body=body, hyperlink=page_url,
-                             title_h1=title_h1, tags=tags, document_id=document_id, similar_documents=similar_documents)
+                             title_h1=title_h1, tags=tags, document_id=data_id, similar_documents=similar_documents)
 
     return sb_document

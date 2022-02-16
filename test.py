@@ -35,9 +35,9 @@ def create_db_table(con):
 
 
 if __name__ == '__main__':
-    sample_document = SbDocument.load_from_json(0)
+    #sample_document = SbDocument.load_from_json(0)
 
-    con = sqlite3.connect('sb_docs.db')
+    #con = sqlite3.connect('sb_docs.db')
 
     # page_urls = collect_links()
     # sample_document = parse_article_page(page_urls[0], 0)
@@ -47,9 +47,11 @@ if __name__ == '__main__':
 
     #create_db_table(con, sample_document)
 
-    for row in con.cursor().execute('SELECT * FROM docs ORDER BY document_id'):
-        print(row)
+    parse_article_page('https://www.sb.by/articles/soobshchenie-press-sluzhby-prezidenta-23082014.html')
+
+    # for row in con.cursor().execute('SELECT * FROM docs ORDER BY document_id'):
+    #     print(row)
 
     # We can also close the connection if we are done with it.
     # Just be sure any changes have been committed or they will be lost.
-    con.close()
+    #con.close()
