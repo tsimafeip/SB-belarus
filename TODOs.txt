@@ -1,2 +1,9 @@
 1. Introduce simple db with hyperlink as key to avoid repetition and storing data in files
+2. Reload files with null document_id
 2. Do initial analysis of existing data
+
+Moments
+1. Wrongly parsed parts with http prefix
+2. Different options for metainfo
+2. Absent similar_docs/tags
+3. Data-id was not initially parsed

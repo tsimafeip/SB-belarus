@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     #create_db_table(con, sample_document)
 
-    parse_article_page('https://www.sb.by/articles/soobshchenie-press-sluzhby-prezidenta-23082014.html')
+    parse_article_page('https://www.sb.by/articles/lukashenko-napravilsya-s-rabochim-vizitom-v-kitay-.html')
 
     # for row in con.cursor().execute('SELECT * FROM docs ORDER BY document_id'):
     #     print(row)

@@ -52,7 +52,7 @@ def collect_links(start_page: int = 1, end_page: int = 968, path_to_file: str = 
     return page_links
 
 
-def parse_article_page(page_url: str) -> SbDocument:
+def parse_article_page(page_url: str, document_id: int) -> SbDocument:
     # path_to_file = os.path.join('data', f'{document_id}.json')
     # if os.path.isfile(path_to_file):
     #     return SbDocument.load_from_json(document_id)
@@ -69,17 +69,21 @@ def parse_article_page(page_url: str) -> SbDocument:
     tags = soup.find('div', attrs={'class': "tags-list"})
     if tags:
         tags = tags.text.strip().split('\n')
-    article_metinfo = soup.find('div', attrs={'class': "item-ajax article-accord"})
-    title = data_id = title_h1 = None
-    if article_metinfo:
-        title = article_metinfo.attrs['data-title'].strip()
-        title_h1 = article_metinfo.attrs['data-title-h1'].strip()
-        data_id = int(article_metinfo.attrs['data-id'].strip())
+    article_metainfo = soup.find('div', attrs={'class': "item-ajax article-accord"})
+    if article_metainfo is None:
+        article_metainfo = soup.find('div', attrs={'class': "item-ajax"})
+
+    title_h1 = None
+    if article_metainfo:
+        title = article_metainfo.attrs['data-title'].strip()
+        title_h1 = article_metainfo.attrs['data-title-h1'].strip()
+        data_id = int(article_metainfo.attrs['data-id'].strip())
         # skip storing duplicate data
         if title_h1 == title:
             title_h1 = None
     else:
         title = soup.find('title').text.strip()
+        data_id = document_id
     author = soup.find('meta', attrs={'property': 'article:author'}).attrs['content'].strip().lower()
     date = soup.find('meta', attrs={'property': 'article:modified_time'}).attrs['content'].strip()
     body = soup.find('div', attrs={'itemprop': 'articleBody'}).text.strip()
