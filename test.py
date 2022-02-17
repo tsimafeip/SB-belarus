@@ -20,6 +20,17 @@ from sb_document import SbDocument
 '''
 
 
+def find_missed_links(con, table_name):
+    db_links = []
+    for row in con.cursor().execute(f'SELECT hyperlink FROM {table_name}'):
+        db_links.append(row[0])
+
+    with open('page_links.txt', 'r') as input_f, open('links_to_reload.txt', 'w') as output_f:
+        all_links = {line.strip() for line in input_f.readlines()}
+        diff = [line + '\n' for line in set(all_links) - set(db_links)]
+        output_f.writelines(diff)
+
+
 def hash_url(url):
     h = hashlib.sha1()
     h.update(url.encode())
@@ -35,9 +46,9 @@ def create_db_table(con):
 
 
 if __name__ == '__main__':
-    #sample_document = SbDocument.load_from_json(0)
+    # sample_document = SbDocument.load_from_json(0)
 
-    #con = sqlite3.connect('sb_docs.db')
+    # con = sqlite3.connect('sb_docs.db')
 
     # page_urls = collect_links()
     # sample_document = parse_article_page(page_urls[0], 0)
@@ -45,7 +56,7 @@ if __name__ == '__main__':
 
     # sample_document.insert_row_to_sqllite(con)
 
-    #create_db_table(con, sample_document)
+    # create_db_table(con, sample_document)
 
     parse_article_page('https://www.sb.by/articles/lukashenko-napravilsya-s-rabochim-vizitom-v-kitay-.html')
 
@@ -54,4 +65,4 @@ if __name__ == '__main__':
 
     # We can also close the connection if we are done with it.
     # Just be sure any changes have been committed or they will be lost.
-    #con.close()
+    # con.close()

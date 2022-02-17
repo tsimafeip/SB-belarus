@@ -4,7 +4,7 @@ from time import sleep
 
 import requests
 from bs4 import BeautifulSoup as bs
-from typing import List
+from typing import List, Optional
 from tqdm import tqdm
 import numpy as np
 
@@ -52,11 +52,7 @@ def collect_links(start_page: int = 1, end_page: int = 968, path_to_file: str = 
     return page_links
 
 
-def parse_article_page(page_url: str, document_id: int) -> SbDocument:
-    # path_to_file = os.path.join('data', f'{document_id}.json')
-    # if os.path.isfile(path_to_file):
-    #     return SbDocument.load_from_json(document_id)
-
+def parse_article_page(page_url: str, document_id: Optional[int] = None) -> SbDocument:
     soup = get_soup(page_url)
 
     text_link_pairs = [(item.text.strip(), item.attrs.get('href').replace(http_prefix, https_prefix))
