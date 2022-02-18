@@ -5,7 +5,7 @@ import sqlite3
 from sb_scraper import collect_links, parse_article_page
 
 DB_NAME = 'sb_articles.db'
-TABLE_NAME = 'articles'
+TABLE_NAME = 'documents'
 
 '''
 select count(distinct hyperlink) from articles
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     # create table if it does not exist
     con.cursor().execute(f'''create table if not exists {TABLE_NAME}
-                        (document_id int PRIMARY KEY, 
+                        (document_id int PRIMARY KEY NOT NULL, 
                         title text NOT NULL, 
                         title_h1 text, 
                         tags text, 
