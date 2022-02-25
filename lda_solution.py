@@ -9,6 +9,8 @@ from typing import List, Tuple, Dict, Optional
 from tqdm import tqdm
 import pyLDAvis
 
+
+
 '''
 Optional TODOs:
 1) Add numpy arrays instead of lists and check speed changes

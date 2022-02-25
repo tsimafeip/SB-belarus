@@ -20,7 +20,7 @@ from string import punctuation
 # nltk.download("stopwords")
 mystem = Mystem()
 russian_stopwords = set(stopwords.words("russian"))
-russian_stopwords.update({'оно', 'этого', 'это', 'который', 'весь'})
+russian_stopwords.update({'оно', 'этого', 'это', 'который', 'весь', 'также'})
 
 
 def find_missed_links(con, table_name):
@@ -149,3 +149,12 @@ def read_preprocessed_docs(source_filename: str = 'preprocessed_docs.txt') -> Tu
             words.extend(docs[-1].split())
 
     return docs, words
+
+
+def count_articles_by_month(sb_documents: List[SbDocument], n: int = 5):
+    month_buckets = Counter()
+    for i, sb_document in enumerate(sb_documents):
+        month_buckets[(sb_document.publication_date.month, sb_document.publication_date.year)] += 1
+
+    print(month_buckets.most_common(n))
+    print(sum(month_buckets.values()) / len(month_buckets))
