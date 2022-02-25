@@ -1,7 +1,11 @@
+import datetime
+from collections import Counter
+
 from tqdm import tqdm
 
 import sqlite3
 
+from helper import load_data_from_db, count_most_common_tags, preprocess_text, preprocess_docs, read_preprocessed_docs
 from sb_scraper import collect_links, parse_article_page
 
 DB_NAME = 'sb_articles.db'
@@ -20,24 +24,22 @@ select count(distinct hyperlink) from articles
 '''
 
 if __name__ == '__main__':
-    page_urls = collect_links(path_to_file='links_to_reload.txt')
+    sb_documents = load_data_from_db(DB_NAME, TABLE_NAME)
 
-    con = sqlite3.connect(DB_NAME)
+    #words = preprocess_docs(sb_documents)
+    docs, words = read_preprocessed_docs()
+    # most popular words
+    words_counter = Counter(words)
+    print(words_counter.most_common(20))
 
-    # create table if it does not exist
-    con.cursor().execute(f'''create table if not exists {TABLE_NAME}
-                        (document_id int PRIMARY KEY NOT NULL, 
-                        title text NOT NULL, 
-                        title_h1 text, 
-                        tags text, 
-                        similar_documents text, 
-                        publication_date datetime NOT NULL, 
-                        author text NOT NULL,
-                        body text NOT NULL, 
-                        hyperlink text NOT NULL)''')
+    # most popular tags
+    count_most_common_tags(sb_documents)
 
-    for page_url in tqdm(page_urls):
-        sb_document = parse_article_page(page_url)
-        sb_document.insert_row_to_sqllite(con, table_name=TABLE_NAME)
+    # articles per month
+    
 
-    con.close()
+    # num of unique tokens
+    print('Num of tokens: ', len(words))
+    print('Num of unique tokens: ', len(words_counter))
+
+    t = 1
