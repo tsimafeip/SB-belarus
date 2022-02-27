@@ -5,7 +5,9 @@ import re
 from collections import Counter
 
 from typing import List, Tuple
+import numpy as np
 
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from sb_document import SbDocument
@@ -153,8 +155,80 @@ def read_preprocessed_docs(source_filename: str = 'preprocessed_docs.txt') -> Tu
 
 def count_articles_by_month(sb_documents: List[SbDocument], n: int = 5):
     month_buckets = Counter()
+    cur_date = (sb_documents[0].publication_date.month, sb_documents[0].publication_date.year)
+    buckets = [0]
+    dates = [cur_date]
     for i, sb_document in enumerate(sb_documents):
-        month_buckets[(sb_document.publication_date.month, sb_document.publication_date.year)] += 1
+        month_year_pair = (sb_document.publication_date.month, sb_document.publication_date.year)
+        if month_year_pair != cur_date:
+            cur_date = month_year_pair
+            buckets.append(1)
+            dates.append(month_year_pair)
+        else:
+            buckets[-1] += 1
+        month_buckets[month_year_pair] += 1
+
+    draw_with_ticks(x=np.arange(len(buckets)), y=np.array(buckets), labels=dates)
 
     print(month_buckets.most_common(n))
     print(sum(month_buckets.values()) / len(month_buckets))
+
+
+def draw_with_ticks(x, y, labels):
+    # set figure size and dpi (dots per inch)
+    plt.figure(figsize=(10, 6), dpi=80)
+
+    # Create a new subplot from a grid of 1x1
+    plt.subplot(111)
+
+    # customize color and line width
+    plt.plot(x, y, color="blue", linewidth=2.5, linestyle="-")
+
+    # set lower & upper bound by taking min & max value respectively
+    plt.xlim(x.min() * 1.1, x.max() * 1.1)
+    plt.ylim(y.min() * 1.1, y.max() * 1.1)
+
+    # provide five tick values for x and 3 for y
+    # and pass the corresponding label as a second argument.
+    x_ticks = []
+    x_tick_labels = []
+    for x_val, x_label in zip(x, labels):
+        if x_label[0] == 1:
+            x_ticks.append(x_val)
+            x_tick_labels.append(x_label[1])
+
+    plt.xticks(x_ticks, x_tick_labels)
+
+    plt.yticks([100, 200, 300, 400, 500])
+
+    plt.grid(True)
+
+    plt.savefig('article_num.png', format='png', bbox_inches='tight')
+
+    # show it on screen
+    plt.show()
+
+
+def run_preliminary_analysis(sb_documents: List[SbDocument]):
+    # most popular tags
+    count_most_common_tags(sb_documents)
+
+    # articles per month
+    count_articles_by_month(sb_documents, 10)
+
+    # words = preprocess_docs(sb_documents)
+    _, full_words = read_preprocessed_docs()
+    _, after_words = read_preprocessed_docs('after_docs.txt')
+    _, before_words = read_preprocessed_docs('before_docs.txt')
+
+    # most popular words
+    full_words_counter = Counter(full_words)
+    before_words_counter = Counter(before_words)
+    after_words_counter = Counter(after_words)
+    print(len(full_words), [(token, count/len(full_words)) for token, count in full_words_counter.most_common(10)])
+    print(len(before_words), [(token, count/len(before_words)) for token, count in before_words_counter.most_common(10)])
+    print(len(after_words), [(token, count/len(after_words)) for token, count in after_words_counter.most_common(10)])
+
+    # num of unique tokens
+    print('Num of tokens: ', len(full_words))
+    print('Num of unique tokens: ', len(full_words_counter))
