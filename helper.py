@@ -1,4 +1,5 @@
 import hashlib
+import os.path
 import sqlite3
 import datetime
 import re
@@ -10,10 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from sb_document import SbDocument
-from sb_scraper import collect_links, parse_article_page
-
-import nltk
+from scraper.sb_document import SbDocument
+from scraper.sb_scraper import collect_links, parse_article_page
 
 from nltk.corpus import stopwords
 from pymystem3 import Mystem
@@ -30,7 +29,7 @@ def find_missed_links(con, table_name):
     for row in con.cursor().execute(f'SELECT hyperlink FROM {table_name}'):
         db_links.append(row[0])
 
-    with open('page_links.txt', 'r') as input_f, open('links_to_reload.txt', 'w') as output_f:
+    with open('scraper/page_links.txt', 'r') as input_f, open('links_to_reload.txt', 'w') as output_f:
         all_links = {line.strip() for line in input_f.readlines()}
         diff = [line + '\n' for line in set(all_links) - set(db_links)]
         output_f.writelines(diff)
@@ -122,7 +121,7 @@ def load_data_from_db(db_name: str, table_name: str) -> List[SbDocument]:
     return docs
 
 
-def preprocess_docs(sb_documents: List[SbDocument], target_filename: str = 'preprocessed_docs.txt') -> List[str]:
+def preprocess_docs(sb_documents: List[SbDocument], target_filename: str = 'data/preprocessed_docs.txt') -> List[str]:
     words = []
     with open(target_filename, 'w') as f:
         f.write(str(len(sb_documents)) + '\n')
@@ -139,7 +138,7 @@ def preprocess_docs(sb_documents: List[SbDocument], target_filename: str = 'prep
     return words
 
 
-def read_preprocessed_docs(source_filename: str = 'preprocessed_docs.txt') -> Tuple[List[str], List[str]]:
+def read_preprocessed_docs(source_filename: str = 'data/preprocessed_docs.txt') -> Tuple[List[str], List[str]]:
     words = []
     docs = []
     with open(source_filename, 'r') as f:
@@ -203,7 +202,10 @@ def draw_with_ticks(x, y, labels):
 
     plt.grid(True)
 
-    plt.savefig('article_num.png', format='png', bbox_inches='tight')
+    path_to_image = 'images/article_num.png'
+
+    if not os.path.isfile(path_to_image):
+        plt.savefig(path_to_image, format='png', bbox_inches='tight')
 
     # show it on screen
     plt.show()
@@ -218,8 +220,8 @@ def run_preliminary_analysis(sb_documents: List[SbDocument]):
 
     # words = preprocess_docs(sb_documents)
     _, full_words = read_preprocessed_docs()
-    _, after_words = read_preprocessed_docs('after_docs.txt')
-    _, before_words = read_preprocessed_docs('before_docs.txt')
+    _, after_words = read_preprocessed_docs('data/after_docs.txt')
+    _, before_words = read_preprocessed_docs('data/before_docs.txt')
 
     # most popular words
     full_words_counter = Counter(full_words)

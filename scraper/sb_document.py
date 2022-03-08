@@ -2,7 +2,7 @@ import os
 import json
 
 from typing import Optional, List, Union
-from datetime import datetime, date
+from datetime import datetime
 
 
 class SbDocument:

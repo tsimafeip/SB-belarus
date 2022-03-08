@@ -8,7 +8,7 @@ from typing import List, Optional
 from tqdm import tqdm
 import numpy as np
 
-from sb_document import SbDocument
+from scraper.sb_document import SbDocument
 
 general_sb_prefix = 'https://www.sb.by'
 page_with_links_prefix = r"https://www.sb.by/articles/main_policy/?PAGEN_2="
