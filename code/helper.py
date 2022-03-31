@@ -1,22 +1,20 @@
+import os
 import re
 import hashlib
-import os.path
-import sqlite3
 import datetime
+import sqlite3
 from collections import Counter
 
-from typing import List, Tuple
 import numpy as np
-
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
-from code.scraper.sb_document import SbDocument
-from code.scraper.sb_scraper import collect_links, parse_article_page
-
+from typing import List, Tuple
 from nltk.corpus import stopwords
 from pymystem3 import Mystem
 from string import punctuation
+
+from scraper.sb_document import SbDocument
+from scraper.sb_scraper import collect_links, parse_article_page
 
 # nltk.download("stopwords")
 mystem = Mystem()
@@ -227,9 +225,10 @@ def run_preliminary_analysis(sb_documents: List[SbDocument]):
     full_words_counter = Counter(full_words)
     before_words_counter = Counter(before_words)
     after_words_counter = Counter(after_words)
-    print(len(full_words), [(token, count/len(full_words)) for token, count in full_words_counter.most_common(10)])
-    print(len(before_words), [(token, count/len(before_words)) for token, count in before_words_counter.most_common(10)])
-    print(len(after_words), [(token, count/len(after_words)) for token, count in after_words_counter.most_common(10)])
+    print(len(full_words), [(token, count / len(full_words)) for token, count in full_words_counter.most_common(10)])
+    print(len(before_words),
+          [(token, count / len(before_words)) for token, count in before_words_counter.most_common(10)])
+    print(len(after_words), [(token, count / len(after_words)) for token, count in after_words_counter.most_common(10)])
 
     # num of unique tokens
     print('Num of tokens: ', len(full_words))

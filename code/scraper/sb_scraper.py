@@ -1,11 +1,11 @@
 import os
 from time import sleep
+from typing import List, Optional
 
 import requests
-from bs4 import BeautifulSoup as bs
-from typing import List, Optional
-from tqdm import tqdm
 import numpy as np
+from tqdm import tqdm
+from bs4 import BeautifulSoup as bs
 
 from sb_document import SbDocument
 

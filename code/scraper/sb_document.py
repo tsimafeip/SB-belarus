@@ -1,8 +1,7 @@
 import os
 import json
-
-from typing import Optional, List, Union
 from datetime import datetime
+from typing import Optional, List, Union
 
 
 class SbDocument:
