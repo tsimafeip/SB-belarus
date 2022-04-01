@@ -7,14 +7,15 @@ from collections import Counter
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from tqdm import tqdm
 from typing import List, Tuple
 from nltk.corpus import stopwords
 from pymystem3 import Mystem
 from string import punctuation
 
-from scraper.sb_document import SbDocument
-from scraper.sb_scraper import collect_links, parse_article_page
+from sb_document import SbDocument
+from sb_scraper import collect_links, parse_article_page
 
 # nltk.download("stopwords")
 mystem = Mystem()
@@ -27,7 +28,7 @@ def find_missed_links(con, table_name):
     for row in con.cursor().execute(f'SELECT hyperlink FROM {table_name}'):
         db_links.append(row[0])
 
-    with open('scraper/page_links.txt', 'r') as input_f, open('links_to_reload.txt', 'w') as output_f:
+    with open('page_links.txt', 'r') as input_f, open('links_to_reload.txt', 'w') as output_f:
         all_links = {line.strip() for line in input_f.readlines()}
         diff = [line + '\n' for line in set(all_links) - set(db_links)]
         output_f.writelines(diff)
@@ -119,7 +120,8 @@ def load_data_from_db(db_name: str, table_name: str) -> List[SbDocument]:
     return docs
 
 
-def preprocess_docs(sb_documents: List[SbDocument], target_filename: str = 'data/preprocessed_docs.txt') -> List[str]:
+def preprocess_docs(sb_documents: List[SbDocument], target_filename: str = '../data/preprocessed_docs.txt') -> List[
+    str]:
     words = []
     with open(target_filename, 'w') as f:
         f.write(str(len(sb_documents)) + '\n')
@@ -136,7 +138,7 @@ def preprocess_docs(sb_documents: List[SbDocument], target_filename: str = 'data
     return words
 
 
-def read_preprocessed_docs(source_filename: str = 'data/preprocessed_docs.txt') -> Tuple[List[str], List[str]]:
+def read_preprocessed_docs(source_filename: str = '../data/preprocessed_docs.txt') -> Tuple[List[str], List[str]]:
     words = []
     docs = []
     with open(source_filename, 'r') as f:
@@ -233,3 +235,20 @@ def run_preliminary_analysis(sb_documents: List[SbDocument]):
     # num of unique tokens
     print('Num of tokens: ', len(full_words))
     print('Num of unique tokens: ', len(full_words_counter))
+
+
+def parse_parquet_to_sqllite(db_name: str, table_name: str, source_path: str = "../../NewsAnalysis-master/data"):
+    filepaths = []
+
+    for root, dirs, files in os.walk(source_path):
+        for file in files:
+            if file.endswith(".parquet"):
+                filepaths.append(os.path.join(root, file))
+
+    frames = []
+    for filepath in filepaths:
+        frames.append(pd.read_parquet(filepath, engine='fastparquet'))
+
+    cnx = sqlite3.connect(db_name)
+    result = pd.concat(frames)
+    result.applymap(str).to_sql(name=table_name, con=cnx)
